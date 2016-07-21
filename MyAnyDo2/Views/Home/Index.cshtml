@@ -1,15 +1,46 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿<!DOCTYPE html>
+@section scripts{    
+<script src="~/Scripts/angular.js"></script>
+<script src="~/MyScript.js"></script>
 }
 
-<div class="jumbotron">
-    <h1>DINA</h1>
+<html ng-app="myAnyDoApp">
+<head>
     
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Hallo!!!!</h2>
-        
+</head>
+<body>
+    <div ng-controller="categoryCtrl">
+        <table class="table table-responsive">
+            <tr>
+                <td style="cursor:pointer" align="center" ng-click="SetModeValue('addcateg')">+</td>
+            </tr>
+            <tr ng-repeat="category in categories">
+                <td style="cursor:pointer" ng-click="SetCatAndMode(category.Id, category.Name, 'taskView')" align="center">{{category.Name}}</td>
+                <td>
+                    <button class="btn btn-default" type="submit" id="btnDeleteCat" ng-click="SetCatAndMode(category.Id, category.Name, 'delcateg')">DeleteCategory</button>
+                </td>
+            </tr>
+        </table>
     </div>
-</div>
+</body>
+</html>
+
+@*<div ng-app="myAnyDoApp">*@
+
+    <!--Category view-->
+    @*<div ng-controller="categoryCtrl">
+        <table class="table table-responsive">
+            <tr>
+                <td style="cursor:pointer" align="center" ng-click="SetModeValue('addcateg')">+</td>
+            </tr>
+            <tr ng-repeat="category in categories">
+                <td style="cursor:pointer" ng-click="SetCatAndMode(category.Id, category.Name, 'taskView')" align="center">{{category.Name}}</td>
+                <td>
+                    <button class="btn btn-default" type="submit" id="btnDeleteCat" ng-click="SetCatAndMode(category.Id, category.Name, 'delcateg')">DeleteCategory</button>
+                </td>
+            </tr>
+        </table>
+    </div>*@
+
+    
+@*</div>*@

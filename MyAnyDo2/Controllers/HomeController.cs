@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MyAnyDo2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -13,18 +14,13 @@ namespace MyAnyDo2.Controllers
             return View();
         }
 
-        public ActionResult About()
+        
+        public JsonResult GetCategory()
         {
-            ViewBag.Message = "Your application description page.";
+            AnyDoDBEntities entities = new AnyDoDBEntities();
+            var result = entities.Category.ToList();
+            return new JsonResult {Data= result, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
 
-            return View();
-        }
-
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
-
-            return View();
         }
     }
 }
