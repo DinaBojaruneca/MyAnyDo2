@@ -75,6 +75,23 @@ namespace MyAnyDo2.Controllers
 
         }
 
+        public void InsertSubTask(string name, int taskId)
+        {
+            SubTask subtask = new SubTask();
+            subtask.Name = name;
+            subtask.TaskId = taskId;
+
+            entities.SubTask.Add(subtask);
+            entities.SaveChanges();
+        }
+
+        public void DeleteSubTask(int id)
+        {
+            SubTask subtask = entities.SubTask.Find(id);
+            entities.SubTask.Remove(subtask);
+            entities.SaveChanges();
+        }
+
         public JsonResult GetNote()
         {
             AnyDoDBEntities entities = new AnyDoDBEntities();
@@ -83,14 +100,28 @@ namespace MyAnyDo2.Controllers
 
         }
 
+        public void InsertNote(string name, int taskId)
+        {
+            Note note = new Note();
+            note.Name = name;
+            note.TaskId = taskId;
+
+            entities.Note.Add(note);
+            entities.SaveChanges();
+        }
+
+        public void DeleteNote(int id)
+        {
+            Note note = entities.Note.Find(id);
+            entities.Note.Remove(note);
+            entities.SaveChanges();
+        }
 
         public JsonResult GetTime()
         {
             AnyDoDBEntities entities = new AnyDoDBEntities();
             var result = entities.Time.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
-            //return new JsonResult { Data = result, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-
         }
     }
 }

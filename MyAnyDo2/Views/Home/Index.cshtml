@@ -62,6 +62,8 @@
 
         <!--Task viewe-->
         <div ng-controller="TaskCtrl" ng-switch on="taskV" class="container panel" ng-switch-when="taskView">
+
+            <!--task Data viewe-->
             <div ng-switch-when="taskData">
                 <button ng-click="SetModeValue('categ', 'time')">To categories</button>
 
@@ -86,9 +88,9 @@
                                 <td style="cursor:pointer" align="center" ng-click="SetTimePriorMode('1','false','addtask')">+</td>
                             </tr>
                             <tr ng-repeat="task in tasks | filter : FilterTasks | filter : SearchText">
-                                <td style="cursor:pointer" ng-click="SetTaskAndMode(task.Id, task.Name, 'subTaskView', task.HighPriority, task.CreationDate)">{{task.Name}}</td>
+                                <td style="cursor:pointer" ng-click="SetTaskAndTaskV(task.Id, task.Name, 'subTaskView', task.HighPriority, task.CreationDate)">{{task.Name}}</td>
                                 <td>
-                                    <button class="btn btn-default" id="btnDeleteTask" ng-click="SetTaskAndMode(task.Id, task.Name, 'delTask')">DeleteTask</button>
+                                    <button class="btn btn-default" id="btnDeleteTask" ng-click="SetTaskAndTaskV(task.Id, task.Name, 'delTask')">DeleteTask</button>
                                 </td>
                             </tr>
                         </table>
@@ -108,10 +110,10 @@
                                         <tr>
                                             <td style="cursor:pointer" ng-click="SetTimePriorMode(time.Id,'false','addtask')">+</td>
                                         </tr>
-                                        <tr ng-click="SetTaskAndMode(task.Id, task.Name, 'subTaskView', task.HighPriority)" ng-repeat="task in tasks | filter:FilterTasks |filter:{TimeId:time.Id} | filter : SearchText">
+                                        <tr ng-click="SetTaskAndTaskV(task.Id, task.Name, 'subTaskView', task.HighPriority, task.CreationDate)" ng-repeat="task in tasks | filter:FilterTasks |filter:{TimeId:time.Id} | filter : SearchText">
                                             <td style="cursor:pointer">
                                                 {{task.Name}}
-                                                <button class="btn-sm" id="btnDeleteTask" ng-click="SetTaskAndMode(task.Id, task.Name, 'delTask')">DeleteTask</button>
+                                                <button class="btn-sm" id="btnDeleteTask" ng-click="SetTaskAndTaskV(task.Id, task.Name, 'delTask')">DeleteTask</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -134,10 +136,10 @@
                                         <tr>
                                             <td style="cursor:pointer" ng-click="SetTimePriorMode('1','true','addtask')">+</td>
                                         </tr>
-                                        <tr ng-click="SetTaskAndMode(task.Id, task.Name, 'subTaskView', task.HighPriority)" ng-repeat="task in tasks | filter:FilterTasks | filter:{HighPriority:'True'} | filter : SearchText">
+                                        <tr ng-click="SetTaskAndTaskV(task.Id, task.Name, 'subTaskView', task.HighPriority, task.CreationDate)" ng-repeat="task in tasks | filter:FilterTasks | filter:{HighPriority:'True'} | filter : SearchText">
                                             <td style="cursor:pointer">
                                                 {{task.Name}}
-                                                <button class="btn-sm" id="btnDeleteTask" ng-click="SetTaskAndMode(task.Id, task.Name, 'delTask')">DeleteTask</button>
+                                                <button class="btn-sm" id="btnDeleteTask" ng-click="SetTaskAndTaskV(task.Id, task.Name, 'delTask')">DeleteTask</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -154,10 +156,10 @@
                                         <tr>
                                             <td style="cursor:pointer" ng-click="SetTimePriorMode('1','false','addtask')">+</td>
                                         </tr>
-                                        <tr ng-click="SetTaskAndMode(task.Id, task.Name, 'subTaskView')" ng-repeat="task in tasks | filter:FilterTasks | filter:{HighPriority:'False'} | filter : SearchText">
+                                        <tr ng-click="SetTaskAndTaskV(task.Id, task.Name, 'subTaskView')" ng-repeat="task in tasks | filter:FilterTasks | filter:{HighPriority:'False'} | filter : SearchText">
                                             <td style="cursor:pointer">
                                                 {{task.Name}}
-                                                <button class="btn-sm" id="btnDeleteTask" ng-click="SetTaskAndMode(task.Id, task.Name, 'delTask')">DeleteTask</button>
+                                                <button class="btn-sm" id="btnDeleteTask" ng-click="SetTaskAndTaskV(task.Id, task.Name, 'delTask')">DeleteTask</button>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -179,7 +181,7 @@
                             <button class="btn btn-default" id="btnAddTask" type="submit" ng-click="InsertTask()">InsertTask</button>
                         </div>
                         <div class="col-sm-5">
-                            <button class="btn btn-default" id="btnCancelk" ng-click="SetModeValue('taskView', 'time')">Cancel</button>
+                            <button class="btn btn-default" id="btnCancelk" ng-click="SetTaskVValue('taskData')">Cancel</button>
                         </div>
                     </div>
                 </form>
@@ -191,7 +193,7 @@
                 <form class="form-horizontal">
                     <div class="form-group row">
                         <div class="col-sm-offset-2 col-sm-2">
-                            <button class="btn btn-default" ng-click="SetModeValue('taskView', 'time')">Cancel</button>
+                            <button class="btn btn-default" ng-click="SetTaskVValue('taskData')">Cancel</button>
                         </div>
                         <div class="col-sm-2">
                             <button class="btn btn-default" type="submit" ng-click="DeleteTask()">Delete</button>
@@ -199,6 +201,103 @@
                     </div>
                 </form>
             </div>
+
+            <!-- SubTask View -->
+            <div ng-controller="SubTaskCtrl" ng-switch on="subtaskV" class="container" ng-switch-when="subTaskView">
+                <div ng-switch-when="subTaskData">
+                    <button ng-click="SetTaskVValue('taskData')">To tasks</button>
+                    <h1>{{TaskName}}</h1>
+                    <br />
+                    <h3>{{CatName}}</h3>
+                    <br />
+                    <h3>{{$parent.CreationDate | date : "long"}}</h3>
+                    <lable>
+                        <input type="checkbox" ng-checked="CheckHighPrior()" ng-click="ChangePriority()" />
+                        Set as HighPriority
+                    </lable>
+
+                    <br />
+                    <br />
+                    <div class="btn-group">
+                        <button class="btn btn-default" ng-click="SetTviewe('notes')">Notes</button>
+                        <button class="btn btn-default" ng-click="SetTviewe('subTask')">SubTasks</button>
+                        <br />
+                    </div>
+
+                    <div class="container" ng-switch on="Tviewe">
+
+                        <!-- subtask viewe -->
+                        <div ng-switch-when="subTask">
+                            <table class="table table-responsive">
+                                <tr>
+                                    <td style="cursor:pointer" align="center" ng-click="SetSubtaskV('addSubtask')">+ Add subtask</td>
+                                </tr>
+                                <tr ng-repeat="subtask in subtasks | filter : FilterSubTasks">
+                                    <td>{{subtask.Name}}</td>
+                                    <td>
+                                        <button class="btn btn-default" id="btnDeleteSubTask" ng-click="DeleteSubtask(subtask.Id)">DeleteSubtask</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                        <!-- Note viewe -->
+                        <div ng-switch-when="notes">
+                            <table class="table table-responsive">
+                                <tr>
+                                    <td style="cursor:pointer" align="center" ng-click="SetSubtaskV('addNote')">+ Add Note</td>
+                                </tr>
+                                <tr ng-repeat="note in notes | filter : FilterNotes">
+                                    <td>{{note.Name}}</td>
+                                    <td>
+                                        <button class="btn btn-default" id="btnDeleteNote" ng-click="DeleteNote(note.Id)">DeleteNote</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- AddSubtask Viewe -->
+                <div class="container panel" ng-switch-when="addSubtask">
+                    <h2 class="panel-heading"></h2>
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" placeholder="Subtask name" ng-model="$parent.SubTaskName" />
+                            </div>
+                            <div class="col-sm-3">
+                                <button class="btn btn-default" id="btnAddSubTask" type="submit" ng-click="InsertSubTask()">InsertSubTask</button>
+                            </div>
+                            <div class="col-sm-5">
+                                <button class="btn btn-default" id="btnCancelk" ng-click="SetTaskVValue('subTaskView')">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- AddNote Viewe -->
+                <div class="container panel" ng-switch-when="addNote">
+                    <h2 class="panel-heading"></h2>
+                    <form class="form-horizontal">
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" placeholder="Note name" ng-model="$parent.NoteName" />
+                            </div>
+                            <div class="col-sm-3">
+                                <button class="btn btn-default" id="btnAddNote" type="submit" ng-click="InsertNote()">InsertNote</button>
+                            </div>
+                            <div class="col-sm-5">
+                                <button class="btn btn-default" id="btnCancelk" ng-click="SetTaskVValue('subTaskView')">Cancel</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+
+
         </div>
 
     </div>

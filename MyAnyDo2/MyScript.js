@@ -21,17 +21,12 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
         $scope.mode.value = value;
     };
 
-    //category paramiters
-    //$scope.CatId;
-    //$scope.CatName;
+    //category paramiters   
     $scope.SetCatAndMode = function (id, name, mode) {
         $scope.CatId = id;
         $scope.CatName = name;
         $scope.mode.value = mode;
 
-        //$rootScope.$broadcast("catId", {
-        //    CatId: $scope.CatId
-        //});
     };
 
     //add category
@@ -76,7 +71,7 @@ myAnyDoApp.factory('CategoryService', function($http){
 
 
 //Task controller
-myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
+myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $filter) {
     getTask();
     getTime();
 
@@ -98,24 +93,13 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
     $scope.viewe = "time";
     $scope.SetVieweValue = function (value) {
         $scope.viewe = value;
-    }
-
-    //$scope.$on("catId", function (event, args) {
-    //    $scope.CatId = args.CatId;
-    //});
+    }      
 
     //filter by category Id
     $scope.FilterTasks = function (task) {
         return task.CategoryId == $scope.CatId;
     }
 
-    $scope.TaskId;
-    $scope.TaskName;
-    $scope.TimeId;
-    $scope.HighPriority;
-    $scope.SubTaskName;
-    $scope.Note;
-    $scope.CreationDate;    
 
     $scope.SetTimePriorMode = function (timeId, Hp, Value) {
         $scope.TimeId = timeId;
@@ -123,7 +107,13 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
         $scope.taskV = Value;
     }
 
+    //switching between task viewes
     $scope.taskV = "taskData";
+
+    $scope.SetTaskVValue = function ( value) {
+        $scope.mode.value = "taskView";
+        $scope.taskV = value;
+    }
 
     // insert Task to database
     $scope.InsertTask = function () {
@@ -140,10 +130,13 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
         $scope.TaskName = "";
     }
 
-    $scope.SetTaskAndMode = function (id, name, modeVal) {
+    $scope.TaskId;
+    $scope.SetTaskAndTaskV = function (id, name, tVal, hp, crDate) {
         $scope.TaskId = id;
         $scope.TaskName = name;
-        $scope.taskV = modeVal;
+        $scope.taskV = tVal;
+        $scope.HighPriority = hp;
+        $scope.CreationDate = crDate;
     }
 
     //delete Task
@@ -159,5 +152,110 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
         });
         $scope.taskV = "taskData";
     };
+
+});
+
+myAnyDoApp.controller("SubTaskCtrl", function ($scope, $http) {
+    getSubTask();
+    getNote();
+
+    //read data from database  
+    function getSubTask() {
+        $http.get('/Home/GetSubTask')
+        .then(function (response) {
+            $scope.subtasks = response.data;
+        });
+    }
+    function getNote() {
+        $http.get('/Home/GetNote')
+        .then(function (response) {
+            $scope.notes = response.data;
+        });
+    }
+
+    $scope.Tviewe = "subTask";
+    $scope.SetTviewe = function (value) {
+        $scope.Tviewe = value;
+    }
+
+    //filter subtasks by task Id
+    $scope.FilterSubTasks = function (subtask) {
+        return subtask.TaskId == $scope.TaskId;
+    }
+
+    //filter notes by task Id
+    $scope.FilterNotes = function (note) {
+        return note.TaskId == $scope.TaskId;
+    }
+
+    //switching between Subtask viewes
+    $scope.subtaskV = "subTaskData";
+    $scope.SetSubtaskV = function (value) {
+        $scope.subtaskV = value;
+    }
+
+    //switching between subtasks and notes
+    $scope.Tviewe = "subTask";
+    $scope.SetTviewe = function (value) {
+        $scope.Tviewe = value;
+    }
+
+    //insert subtask
+    $scope.InsertSubTask = function () {
+        $http({
+            method: 'POST',
+            url: '/Home/InsertSubTask',
+            data: { 'name': $scope.SubTaskName, 'taskId' : $scope.TaskId },
+            //headers: { 'content-type': 'application/json' }
+        })
+            .success(function () {
+                getSubTask();
+            });
+        $scope.subtaskV = "subTaskData";
+        $scope.SubTaskName = "";
+    }
+
+    //delete Subtask
+    $scope.DeleteSubtask = function (Id) {
+        $http({
+            method: 'POST',
+            url: '/Home/DeleteSubTask',
+            data: { id: Id },
+            //headers: { 'content-type': 'application/json' }
+        })
+        .success(function () {
+            getSubTask();
+        });
+        $scope.subtaskV = "subTaskData";
+    }
+
+    //insert Note
+    $scope.InsertNote = function () {
+        $http({
+            method: 'POST',
+            url: '/Home/InsertNote',
+            data: { 'name': $scope.NoteName, 'taskId': $scope.TaskId },
+            //headers: { 'content-type': 'application/json' }
+        })
+            .success(function () {
+                getNote();
+            });
+        $scope.subtaskV = "subTaskData";
+        $scope.NoteName = "";
+    }
+
+    //delete Note
+    $scope.DeleteNote = function (Id) {
+        $http({
+            method: 'POST',
+            url: '/Home/DeleteNote',
+            data: { id: Id },
+            //headers: { 'content-type': 'application/json' }
+        })
+        .success(function () {
+            getNote();
+        });
+        $scope.subtaskV = "subTaskData";
+    }
 
 });
