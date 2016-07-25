@@ -60,7 +60,12 @@ namespace MyAnyDo2.Controllers
             entities.SaveChanges();
         }
 
-
+        public void DeleteTask(int id)
+        {
+            Task task = entities.Task.Find(id);
+            entities.Task.Remove(task);
+            entities.SaveChanges();
+        }
 
         public JsonResult GetSubTask()
         {

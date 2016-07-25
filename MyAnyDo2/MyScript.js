@@ -16,9 +16,9 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
     };
 
     //switching between forms
-    $scope.mode = 'categ';
+    $scope.mode = {value:'categ'};
     $scope.SetModeValue = function (value) {
-        $scope.mode = value;
+        $scope.mode.value = value;
     };
 
     //category paramiters
@@ -27,7 +27,7 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
     $scope.SetCatAndMode = function (id, name, mode) {
         $scope.CatId = id;
         $scope.CatName = name;
-        $scope.mode = mode;
+        $scope.mode.value = mode;
 
         //$rootScope.$broadcast("catId", {
         //    CatId: $scope.CatId
@@ -45,7 +45,7 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
             .success(function () {
                 getCategory();
             });
-        $scope.mode = "categ";        
+        $scope.mode.value = "categ";        
         $scope.CategoryName = "";
     }
 
@@ -60,7 +60,7 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
         .success(function () {
             getCategory();
         });
-        $scope.mode = "categ";
+        $scope.mode.value = "categ";
     };
 
 });
@@ -120,8 +120,10 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
     $scope.SetTimePriorMode = function (timeId, Hp, Value) {
         $scope.TimeId = timeId;
         $scope.HighPriority = Hp;
-        $scope.viewe = Value;
+        $scope.taskV = Value;
     }
+
+    $scope.taskV = "taskData";
 
     // insert Task to database
     $scope.InsertTask = function () {
@@ -134,8 +136,28 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
             .success(function () {
                 getTask();
             });
-        $scope.mode = "taskView";
+        $scope.taskV = "taskData";
         $scope.TaskName = "";
     }
+
+    $scope.SetTaskAndMode = function (id, name, modeVal) {
+        $scope.TaskId = id;
+        $scope.TaskName = name;
+        $scope.taskV = modeVal;
+    }
+
+    //delete Task
+    $scope.DeleteTask = function () {
+        $http({
+            method: 'POST',
+            url: '/Home/DeleteTask',
+            data: { id: $scope.TaskId },
+            //headers: { 'content-type': 'application/json' }
+        })
+        .success(function () {
+            getTask();
+        });
+        $scope.taskV = "taskData";
+    };
 
 });
