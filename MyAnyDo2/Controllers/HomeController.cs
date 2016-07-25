@@ -46,8 +46,21 @@ namespace MyAnyDo2.Controllers
             AnyDoDBEntities entities = new AnyDoDBEntities();
             var result = entities.Task.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
-
         }
+
+        public void InsertTask(string name, int catId, int timeId, bool hp)
+        {
+            Task task = new Task();
+            task.Name = name;
+            task.CategoryId = catId;
+            task.TimeId = timeId;
+            task.HighPriority = hp;
+
+            entities.Task.Add(task);
+            entities.SaveChanges();
+        }
+
+
 
         public JsonResult GetSubTask()
         {
