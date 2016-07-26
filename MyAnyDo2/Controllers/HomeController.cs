@@ -1,6 +1,7 @@
 ﻿using MyAnyDo2.Models;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -123,5 +124,15 @@ namespace MyAnyDo2.Controllers
             var result = entities.Time.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+
+        public void SetHighPriority(int taskId, bool hp)
+        {
+            Task task = entities.Task.Find(taskId);
+            task.HighPriority = hp;
+            entities.Entry(task).State = EntityState.Modified;
+            entities.SaveChanges();
+        }
+
     }
 }

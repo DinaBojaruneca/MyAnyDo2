@@ -71,7 +71,7 @@ myAnyDoApp.factory('CategoryService', function($http){
 
 
 //Task controller
-myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $filter) {
+myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $rootScope) {
     getTask();
     getTime();
 
@@ -113,6 +113,7 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $filter) {
     $scope.SetTaskVValue = function ( value) {
         $scope.mode.value = "taskView";
         $scope.taskV = value;
+        getTask();
     }
 
     // insert Task to database
@@ -130,6 +131,7 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $filter) {
         $scope.TaskName = "";
     }
 
+    $scope.HighPriority;
     $scope.TaskId;
     $scope.SetTaskAndTaskV = function (id, name, tVal, hp, crDate) {
         $scope.TaskId = id;
@@ -137,7 +139,7 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $filter) {
         $scope.taskV = tVal;
         $scope.HighPriority = hp;
         $scope.CreationDate = crDate;
-    }
+    }    
 
     //delete Task
     $scope.DeleteTask = function () {
@@ -155,6 +157,7 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $filter) {
 
 });
 
+//subtask controller
 myAnyDoApp.controller("SubTaskCtrl", function ($scope, $http) {
     getSubTask();
     getNote();
@@ -171,7 +174,21 @@ myAnyDoApp.controller("SubTaskCtrl", function ($scope, $http) {
         .then(function (response) {
             $scope.notes = response.data;
         });
-    }
+    }       
+
+    //change priority
+    $scope.ChangePriority = function () {     
+
+            $http({
+                method: 'POST',
+                url: '/Home/SetHighPriority',
+                data: { 'taskId': $scope.TaskId, 'hp': $scope.HighPriority }                
+            })
+            .success(function () {
+                getSubTask();
+            });
+        }        
+    
 
     $scope.Tviewe = "subTask";
     $scope.SetTviewe = function (value) {
@@ -257,5 +274,7 @@ myAnyDoApp.controller("SubTaskCtrl", function ($scope, $http) {
         });
         $scope.subtaskV = "subTaskData";
     }
+
+    
 
 });

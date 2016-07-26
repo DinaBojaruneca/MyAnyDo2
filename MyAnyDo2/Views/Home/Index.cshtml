@@ -212,7 +212,7 @@
                     <br />
                     <h3>{{$parent.CreationDate | date : "long"}}</h3>
                     <lable>
-                        <input type="checkbox" ng-checked="CheckHighPrior()" ng-click="ChangePriority()" />
+                        <input type="checkbox" ng-model="$parent.HighPriority" ng-click="ChangePriority()" />
                         Set as HighPriority
                     </lable>
 
