@@ -221,6 +221,8 @@
                     <div class="btn-group">
                         <button class="btn btn-default" ng-click="SetTviewe('notes')">Notes</button>
                         <button class="btn btn-default" ng-click="SetTviewe('subTask')">SubTasks</button>
+                        <button class="btn btn-default" ng-click="SetTviewe('attach')">Attachments</button>
+                        <button class="btn btn-default" ng-click="SetTviewe('shear')">Share</button>
                         <br />
                     </div>
 
@@ -255,6 +257,19 @@
                                 </tr>
                             </table>
                         </div>
+
+                        <!-- Attachment viewe -->
+                        <div ng-switch-when="attach">
+                            <input type="file" file-model="myFile" />
+                            <button ng-click="uploadFile()">upload me</button>
+                        </div>
+
+
+                        <!-- Shear viewe -->
+                        <div ng-switch-when="shear">
+
+                        </div>
+
 
                     </div>
                 </div>

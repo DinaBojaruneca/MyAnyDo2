@@ -18,7 +18,6 @@ namespace MyAnyDo2.Models
         public AnyDoDBEntities()
             : base("name=AnyDoDBEntities")
         {
-            Configuration.LazyLoadingEnabled = false;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -31,5 +30,6 @@ namespace MyAnyDo2.Models
         public virtual DbSet<SubTask> SubTask { get; set; }
         public virtual DbSet<Task> Task { get; set; }
         public virtual DbSet<Time> Time { get; set; }
+        public virtual DbSet<File> File { get; set; }
     }
 }

@@ -4,13 +4,23 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="AnyDoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="AnyDoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Category">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="File">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FileName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FilePath" Type="varchar" MaxLength="300" Nullable="false" />
+          <Property Name="FileSize" Type="int" Nullable="false" />
+          <Property Name="TaskId" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Note">
           <Key>
@@ -102,6 +112,7 @@
         </Association>
         <EntityContainer Name="AnyDoDBModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="File" EntityType="Self.File" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Note" EntityType="Self.Note" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubTask" EntityType="Self.SubTask" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Task" EntityType="Self.Task" Schema="dbo" store:Type="Tables" />
@@ -123,8 +134,7 @@
             <End Role="Task" EntitySet="Task" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="AnyDoDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -168,6 +178,7 @@
           <NavigationProperty Name="Note" Relationship="Self.FK__Note__TaskId__32E0915F" FromRole="Task" ToRole="Note" />
           <NavigationProperty Name="SubTask" Relationship="Self.FK__SubTask__TaskId__300424B4" FromRole="Task" ToRole="SubTask" />
           <NavigationProperty Name="Time" Relationship="Self.FK_Task_ToTable" FromRole="Task" ToRole="Time" />
+          <NavigationProperty Name="File" Relationship="AnyDoDBModel.FileTask" FromRole="Task" ToRole="File" />
         </EntityType>
         <EntityType Name="Time">
           <Key>
@@ -253,7 +264,27 @@
             <End Role="Time" EntitySet="Time" />
             <End Role="Task" EntitySet="Task" />
           </AssociationSet>
+          <EntitySet Name="File" EntityType="AnyDoDBModel.File" />
+          <AssociationSet Name="FileTask" Association="AnyDoDBModel.FileTask">
+            <End Role="File" EntitySet="File" />
+            <End Role="Task" EntitySet="Task" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="File">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FileName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="FileSize" Type="Int32" Nullable="false" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Task" Relationship="AnyDoDBModel.FileTask" FromRole="File" ToRole="Task" />
+        </EntityType>
+        <Association Name="FileTask">
+          <End Type="AnyDoDBModel.File" Role="File" Multiplicity="*" />
+          <End Type="AnyDoDBModel.Task" Role="Task" Multiplicity="1" />
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -303,6 +334,17 @@
               <MappingFragment StoreEntitySet="Time">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="File">
+            <EntityTypeMapping TypeName="AnyDoDBModel.File">
+              <MappingFragment StoreEntitySet="File">
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
+                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
