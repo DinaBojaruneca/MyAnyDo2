@@ -4,13 +4,24 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="AnyDoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="AnyDoDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Category">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="MyTask">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="CategoryId" Type="int" />
+          <Property Name="HighPriority" Type="bit" Nullable="false" />
+          <Property Name="TimeId" Type="int" Nullable="false" />
+          <Property Name="CreationDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Note">
           <Key>
@@ -27,17 +38,6 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" />
           <Property Name="TaskId" Type="int" />
-        </EntityType>
-        <EntityType Name="Task">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="Name" Type="nvarchar" MaxLength="50" />
-          <Property Name="CategoryId" Type="int" />
-          <Property Name="HighPriority" Type="bit" Nullable="false" />
-          <Property Name="TimeId" Type="int" Nullable="false" />
-          <Property Name="CreationDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Time">
           <Key>
@@ -56,13 +56,37 @@
           <Property Name="FileSize" Type="int" Nullable="false" />
           <Property Name="TaskId" Type="int" Nullable="false" />
         </EntityType>
-        <Association Name="FK__Note__TaskId__32E0915F">
-          <End Role="Task" Type="Self.Task" Multiplicity="0..1">
+        <Association Name="FK__MyTask__CategoryId__2D27B809">
+          <End Role="Category" Type="Self.Category" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Category">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MyTask">
+              <PropertyRef Name="CategoryId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_MyTask_ToTable">
+          <End Role="Time" Type="Self.Time" Multiplicity="1" />
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Time">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MyTask">
+              <PropertyRef Name="TimeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Note_MyTask">
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="0..1" />
           <End Role="Note" Type="Self.Note" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Task">
+            <Principal Role="MyTask">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Note">
@@ -70,13 +94,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__SubTask__TaskId__300424B4">
-          <End Role="Task" Type="Self.Task" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
+        <Association Name="FK_SubTask_MyTask">
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="0..1" />
           <End Role="SubTask" Type="Self.SubTask" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Task">
+            <Principal Role="MyTask">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="SubTask">
@@ -84,37 +106,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Task__CategoryId__2D27B809">
-          <End Role="Category" Type="Self.Category" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
-          <End Role="Task" Type="Self.Task" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Category">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Task">
-              <PropertyRef Name="CategoryId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_Task_ToTable">
-          <End Role="Time" Type="Self.Time" Multiplicity="1" />
-          <End Role="Task" Type="Self.Task" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Time">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Task">
-              <PropertyRef Name="TimeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="FK_UploadFile_ToTable">
-          <End Role="Task" Type="Self.Task" Multiplicity="1" />
+        <Association Name="FK_UploadFile_MyTask">
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="1" />
           <End Role="UploadFile" Type="Self.UploadFile" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Task">
+            <Principal Role="MyTask">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="UploadFile">
@@ -124,33 +120,34 @@
         </Association>
         <EntityContainer Name="AnyDoDBModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MyTask" EntityType="Self.MyTask" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Note" EntityType="Self.Note" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubTask" EntityType="Self.SubTask" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Task" EntityType="Self.Task" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Time" EntityType="Self.Time" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="UploadFile" EntityType="Self.UploadFile" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Note__TaskId__32E0915F" Association="Self.FK__Note__TaskId__32E0915F">
-            <End Role="Task" EntitySet="Task" />
+          <AssociationSet Name="FK__MyTask__CategoryId__2D27B809" Association="Self.FK__MyTask__CategoryId__2D27B809">
+            <End Role="Category" EntitySet="Category" />
+            <End Role="MyTask" EntitySet="MyTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MyTask_ToTable" Association="Self.FK_MyTask_ToTable">
+            <End Role="Time" EntitySet="Time" />
+            <End Role="MyTask" EntitySet="MyTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Note_MyTask" Association="Self.FK_Note_MyTask">
+            <End Role="MyTask" EntitySet="MyTask" />
             <End Role="Note" EntitySet="Note" />
           </AssociationSet>
-          <AssociationSet Name="FK__SubTask__TaskId__300424B4" Association="Self.FK__SubTask__TaskId__300424B4">
-            <End Role="Task" EntitySet="Task" />
+          <AssociationSet Name="FK_SubTask_MyTask" Association="Self.FK_SubTask_MyTask">
+            <End Role="MyTask" EntitySet="MyTask" />
             <End Role="SubTask" EntitySet="SubTask" />
           </AssociationSet>
-          <AssociationSet Name="FK__Task__CategoryId__2D27B809" Association="Self.FK__Task__CategoryId__2D27B809">
-            <End Role="Category" EntitySet="Category" />
-            <End Role="Task" EntitySet="Task" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Task_ToTable" Association="Self.FK_Task_ToTable">
-            <End Role="Time" EntitySet="Time" />
-            <End Role="Task" EntitySet="Task" />
-          </AssociationSet>
-          <AssociationSet Name="FK_UploadFile_ToTable" Association="Self.FK_UploadFile_ToTable">
-            <End Role="Task" EntitySet="Task" />
+          <AssociationSet Name="FK_UploadFile_MyTask" Association="Self.FK_UploadFile_MyTask">
+            <End Role="MyTask" EntitySet="MyTask" />
             <End Role="UploadFile" EntitySet="UploadFile" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="AnyDoDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -160,27 +157,9 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <NavigationProperty Name="Task" Relationship="Self.FK__Task__CategoryId__2D27B809" FromRole="Category" ToRole="Task" />
+          <NavigationProperty Name="MyTask" Relationship="Self.FK__MyTask__CategoryId__2D27B809" FromRole="Category" ToRole="MyTask" />
         </EntityType>
-        <EntityType Name="Note">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TaskId" Type="Int32" />
-          <NavigationProperty Name="Task" Relationship="Self.FK__Note__TaskId__32E0915F" FromRole="Note" ToRole="Task" />
-        </EntityType>
-        <EntityType Name="SubTask">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="TaskId" Type="Int32" />
-          <NavigationProperty Name="Task" Relationship="Self.FK__SubTask__TaskId__300424B4" FromRole="SubTask" ToRole="Task" />
-        </EntityType>
-        <EntityType Name="Task">
+        <EntityType Name="MyTask">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
@@ -190,11 +169,29 @@
           <Property Name="HighPriority" Type="Boolean" Nullable="false" />
           <Property Name="TimeId" Type="Int32" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Category" Relationship="Self.FK__Task__CategoryId__2D27B809" FromRole="Task" ToRole="Category" />
-          <NavigationProperty Name="Note" Relationship="Self.FK__Note__TaskId__32E0915F" FromRole="Task" ToRole="Note" />
-          <NavigationProperty Name="SubTask" Relationship="Self.FK__SubTask__TaskId__300424B4" FromRole="Task" ToRole="SubTask" />
-          <NavigationProperty Name="Time" Relationship="Self.FK_Task_ToTable" FromRole="Task" ToRole="Time" />
-          <NavigationProperty Name="UploadFile" Relationship="AnyDoDBModel.FK_UploadFile_ToTable" FromRole="Task" ToRole="UploadFile" />
+          <NavigationProperty Name="Category" Relationship="Self.FK__MyTask__CategoryId__2D27B809" FromRole="MyTask" ToRole="Category" />
+          <NavigationProperty Name="Time" Relationship="Self.FK_MyTask_ToTable" FromRole="MyTask" ToRole="Time" />
+          <NavigationProperty Name="Note" Relationship="Self.FK_Note_MyTask" FromRole="MyTask" ToRole="Note" />
+          <NavigationProperty Name="SubTask" Relationship="Self.FK_SubTask_MyTask" FromRole="MyTask" ToRole="SubTask" />
+          <NavigationProperty Name="UploadFile" Relationship="Self.FK_UploadFile_MyTask" FromRole="MyTask" ToRole="UploadFile" />
+        </EntityType>
+        <EntityType Name="Note">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="TaskId" Type="Int32" />
+          <NavigationProperty Name="MyTask" Relationship="Self.FK_Note_MyTask" FromRole="Note" ToRole="MyTask" />
+        </EntityType>
+        <EntityType Name="SubTask">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="TaskId" Type="Int32" />
+          <NavigationProperty Name="MyTask" Relationship="Self.FK_SubTask_MyTask" FromRole="SubTask" ToRole="MyTask" />
         </EntityType>
         <EntityType Name="Time">
           <Key>
@@ -202,29 +199,50 @@
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
           <Property Name="Name" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
-          <NavigationProperty Name="Task" Relationship="Self.FK_Task_ToTable" FromRole="Time" ToRole="Task" />
+          <NavigationProperty Name="MyTask" Relationship="Self.FK_MyTask_ToTable" FromRole="Time" ToRole="MyTask" />
         </EntityType>
-        <Association Name="FK__Task__CategoryId__2D27B809">
+        <EntityType Name="UploadFile">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FileName" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FilePath" Type="String" MaxLength="100" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="FileSize" Type="Int32" Nullable="false" />
+          <Property Name="TaskId" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="MyTask" Relationship="Self.FK_UploadFile_MyTask" FromRole="UploadFile" ToRole="MyTask" />
+        </EntityType>
+        <Association Name="FK__MyTask__CategoryId__2D27B809">
           <End Role="Category" Type="Self.Category" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
           </End>
-          <End Role="Task" Type="Self.Task" Multiplicity="*" />
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Category">
               <PropertyRef Name="Id" />
             </Principal>
-            <Dependent Role="Task">
+            <Dependent Role="MyTask">
               <PropertyRef Name="CategoryId" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Note__TaskId__32E0915F">
-          <End Role="Task" Type="Self.Task" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
+        <Association Name="FK_MyTask_ToTable">
+          <End Role="Time" Type="Self.Time" Multiplicity="1" />
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Time">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MyTask">
+              <PropertyRef Name="TimeId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Note_MyTask">
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="0..1" />
           <End Role="Note" Type="Self.Note" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Task">
+            <Principal Role="MyTask">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="Note">
@@ -232,13 +250,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__SubTask__TaskId__300424B4">
-          <End Role="Task" Type="Self.Task" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
+        <Association Name="FK_SubTask_MyTask">
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="0..1" />
           <End Role="SubTask" Type="Self.SubTask" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Task">
+            <Principal Role="MyTask">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="SubTask">
@@ -246,62 +262,11 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK_Task_ToTable">
-          <End Role="Time" Type="Self.Time" Multiplicity="1" />
-          <End Role="Task" Type="Self.Task" Multiplicity="*" />
+        <Association Name="FK_UploadFile_MyTask">
+          <End Role="MyTask" Type="Self.MyTask" Multiplicity="1" />
+          <End Role="UploadFile" Type="Self.UploadFile" Multiplicity="*" />
           <ReferentialConstraint>
-            <Principal Role="Time">
-              <PropertyRef Name="Id" />
-            </Principal>
-            <Dependent Role="Task">
-              <PropertyRef Name="TimeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityContainer Name="AnyDoDBEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Category" EntityType="Self.Category" />
-          <EntitySet Name="Note" EntityType="Self.Note" />
-          <EntitySet Name="SubTask" EntityType="Self.SubTask" />
-          <EntitySet Name="Task" EntityType="Self.Task" />
-          <EntitySet Name="Time" EntityType="Self.Time" />
-          <AssociationSet Name="FK__Task__CategoryId__2D27B809" Association="Self.FK__Task__CategoryId__2D27B809">
-            <End Role="Category" EntitySet="Category" />
-            <End Role="Task" EntitySet="Task" />
-          </AssociationSet>
-          <AssociationSet Name="FK__Note__TaskId__32E0915F" Association="Self.FK__Note__TaskId__32E0915F">
-            <End Role="Task" EntitySet="Task" />
-            <End Role="Note" EntitySet="Note" />
-          </AssociationSet>
-          <AssociationSet Name="FK__SubTask__TaskId__300424B4" Association="Self.FK__SubTask__TaskId__300424B4">
-            <End Role="Task" EntitySet="Task" />
-            <End Role="SubTask" EntitySet="SubTask" />
-          </AssociationSet>
-          <AssociationSet Name="FK_Task_ToTable" Association="Self.FK_Task_ToTable">
-            <End Role="Time" EntitySet="Time" />
-            <End Role="Task" EntitySet="Task" />
-          </AssociationSet>
-          <EntitySet Name="UploadFile" EntityType="AnyDoDBModel.UploadFile" />
-          <AssociationSet Name="FK_UploadFile_ToTable" Association="AnyDoDBModel.FK_UploadFile_ToTable">
-            <End Role="Task" EntitySet="Task" />
-            <End Role="UploadFile" EntitySet="UploadFile" />
-          </AssociationSet>
-        </EntityContainer>
-        <EntityType Name="UploadFile">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FileName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="FileSize" Type="Int32" Nullable="false" />
-          <Property Name="TaskId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Task" Relationship="AnyDoDBModel.FK_UploadFile_ToTable" FromRole="UploadFile" ToRole="Task" />
-        </EntityType>
-        <Association Name="FK_UploadFile_ToTable">
-          <End Type="AnyDoDBModel.Task" Role="Task" Multiplicity="1" />
-          <End Type="AnyDoDBModel.UploadFile" Role="UploadFile" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Task">
+            <Principal Role="MyTask">
               <PropertyRef Name="Id" />
             </Principal>
             <Dependent Role="UploadFile">
@@ -309,17 +274,57 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityContainer Name="AnyDoDBEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Category" EntityType="Self.Category" />
+          <EntitySet Name="MyTask" EntityType="Self.MyTask" />
+          <EntitySet Name="Note" EntityType="Self.Note" />
+          <EntitySet Name="SubTask" EntityType="Self.SubTask" />
+          <EntitySet Name="Time" EntityType="Self.Time" />
+          <EntitySet Name="UploadFile" EntityType="Self.UploadFile" />
+          <AssociationSet Name="FK__MyTask__CategoryId__2D27B809" Association="Self.FK__MyTask__CategoryId__2D27B809">
+            <End Role="Category" EntitySet="Category" />
+            <End Role="MyTask" EntitySet="MyTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_MyTask_ToTable" Association="Self.FK_MyTask_ToTable">
+            <End Role="Time" EntitySet="Time" />
+            <End Role="MyTask" EntitySet="MyTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Note_MyTask" Association="Self.FK_Note_MyTask">
+            <End Role="MyTask" EntitySet="MyTask" />
+            <End Role="Note" EntitySet="Note" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SubTask_MyTask" Association="Self.FK_SubTask_MyTask">
+            <End Role="MyTask" EntitySet="MyTask" />
+            <End Role="SubTask" EntitySet="SubTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UploadFile_MyTask" Association="Self.FK_UploadFile_MyTask">
+            <End Role="MyTask" EntitySet="MyTask" />
+            <End Role="UploadFile" EntitySet="UploadFile" />
+          </AssociationSet>
+        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="AnyDoDBModelStoreContainer" CdmEntityContainer="AnyDoDBEntities">
+        <EntityContainerMapping StorageEntityContainer="AnyDoDBModelStoreContainer" CdmEntityContainer="AnyDoDBEntities1">
           <EntitySetMapping Name="Category">
             <EntityTypeMapping TypeName="AnyDoDBModel.Category">
               <MappingFragment StoreEntitySet="Category">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MyTask">
+            <EntityTypeMapping TypeName="AnyDoDBModel.MyTask">
+              <MappingFragment StoreEntitySet="MyTask">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
+                <ScalarProperty Name="HighPriority" ColumnName="HighPriority" />
+                <ScalarProperty Name="TimeId" ColumnName="TimeId" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -341,18 +346,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Task">
-            <EntityTypeMapping TypeName="AnyDoDBModel.Task">
-              <MappingFragment StoreEntitySet="Task">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Name" ColumnName="Name" />
-                <ScalarProperty Name="CategoryId" ColumnName="CategoryId" />
-                <ScalarProperty Name="HighPriority" ColumnName="HighPriority" />
-                <ScalarProperty Name="TimeId" ColumnName="TimeId" />
-                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Time">
             <EntityTypeMapping TypeName="AnyDoDBModel.Time">
               <MappingFragment StoreEntitySet="Time">
@@ -364,11 +357,11 @@
           <EntitySetMapping Name="UploadFile">
             <EntityTypeMapping TypeName="AnyDoDBModel.UploadFile">
               <MappingFragment StoreEntitySet="UploadFile">
-                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
-                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
-                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
-                <ScalarProperty Name="FileName" ColumnName="FileName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="FileName" ColumnName="FileName" />
+                <ScalarProperty Name="FilePath" ColumnName="FilePath" />
+                <ScalarProperty Name="FileSize" ColumnName="FileSize" />
+                <ScalarProperty Name="TaskId" ColumnName="TaskId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -12,10 +12,10 @@ namespace MyAnyDo2.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Task
+    public partial class MyTask
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Task()
+        public MyTask()
         {
             this.Note = new HashSet<Note>();
             this.SubTask = new HashSet<SubTask>();
@@ -30,11 +30,11 @@ namespace MyAnyDo2.Models
         public Nullable<System.DateTime> CreationDate { get; set; }
     
         public virtual Category Category { get; set; }
+        public virtual Time Time { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Note> Note { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<SubTask> SubTask { get; set; }
-        public virtual Time Time { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<UploadFile> UploadFile { get; set; }
     }

@@ -13,10 +13,10 @@ namespace MyAnyDo2.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class AnyDoDBEntities : DbContext
+    public partial class AnyDoDBEntities1 : DbContext
     {
-        public AnyDoDBEntities()
-            : base("name=AnyDoDBEntities")
+        public AnyDoDBEntities1()
+            : base("name=AnyDoDBEntities1")
         {
             Configuration.LazyLoadingEnabled = false;
         }
@@ -27,9 +27,9 @@ namespace MyAnyDo2.Models
         }
     
         public virtual DbSet<Category> Category { get; set; }
+        public virtual DbSet<MyTask> MyTask { get; set; }
         public virtual DbSet<Note> Note { get; set; }
         public virtual DbSet<SubTask> SubTask { get; set; }
-        public virtual DbSet<Task> Task { get; set; }
         public virtual DbSet<Time> Time { get; set; }
         public virtual DbSet<UploadFile> UploadFile { get; set; }
     }

@@ -288,8 +288,10 @@
 
 
                         <!-- Shear viewe -->
-                        <div ng-switch-when="shear">
-
+                        <div ng-controller="EmailCtrl" ng-switch-when="shear">
+                            <input type="text" placeholder="e-mail To" ng-model="Email"/>
+                            <input type="text" placeholder="description" ng-model="Description" />
+                            <input type="submit" value="Send Email" ng-click="SendEmail()" />
                         </div>
 
 

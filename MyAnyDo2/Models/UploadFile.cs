@@ -20,6 +20,6 @@ namespace MyAnyDo2.Models
         public int FileSize { get; set; }
         public int TaskId { get; set; }
     
-        public virtual Task Task { get; set; }
+        public virtual MyTask MyTask { get; set; }
     }
 }

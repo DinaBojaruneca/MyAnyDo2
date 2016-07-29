@@ -6,13 +6,15 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-
+using System.Net;
+using System.Net.Mail;
+using System.Threading.Tasks;
 
 namespace MyAnyDo2.Controllers
 {
     public class HomeController : Controller
     {
-        AnyDoDBEntities entities = new AnyDoDBEntities();
+        AnyDoDBEntities1 entities = new AnyDoDBEntities1();
 
         public ActionResult Index()
         {
@@ -22,7 +24,7 @@ namespace MyAnyDo2.Controllers
         
         public JsonResult GetCategory()
         {
-            AnyDoDBEntities entities = new AnyDoDBEntities();
+            AnyDoDBEntities1 entities = new AnyDoDBEntities1();
             var result = entities.Category.ToList();            
             return Json(result, JsonRequestBehavior.AllowGet);
 
@@ -47,33 +49,34 @@ namespace MyAnyDo2.Controllers
 
         public JsonResult GetTask()
         {
-            AnyDoDBEntities entities = new AnyDoDBEntities();
-            var result = entities.Task.ToList();
+            AnyDoDBEntities1 entities = new AnyDoDBEntities1();
+            var result = entities.MyTask.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         public void InsertTask(string name, int catId, int timeId, bool hp)
         {
-            Task task = new Task();
+            MyTask task = new MyTask();
             task.Name = name;
             task.CategoryId = catId;
             task.TimeId = timeId;
             task.HighPriority = hp;
+            task.CreationDate = DateTime.Now;
 
-            entities.Task.Add(task);
+            entities.MyTask.Add(task);
             entities.SaveChanges();
         }
 
         public void DeleteTask(int id)
         {
-            Task task = entities.Task.Find(id);
-            entities.Task.Remove(task);
+            MyTask task = entities.MyTask.Find(id);
+            entities.MyTask.Remove(task);
             entities.SaveChanges();
         }
 
         public JsonResult GetSubTask()
         {
-            AnyDoDBEntities entities = new AnyDoDBEntities();
+            AnyDoDBEntities1 entities = new AnyDoDBEntities1();
             var result = entities.SubTask.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
 
@@ -98,7 +101,7 @@ namespace MyAnyDo2.Controllers
 
         public JsonResult GetNote()
         {
-            AnyDoDBEntities entities = new AnyDoDBEntities();
+            AnyDoDBEntities1 entities = new AnyDoDBEntities1();
             var result = entities.Note.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
 
@@ -123,7 +126,7 @@ namespace MyAnyDo2.Controllers
 
         public JsonResult GetTime()
         {
-            AnyDoDBEntities entities = new AnyDoDBEntities();
+            AnyDoDBEntities1 entities = new AnyDoDBEntities1();
             var result = entities.Time.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -131,7 +134,7 @@ namespace MyAnyDo2.Controllers
 
         public void SetHighPriority(int taskId, bool hp)
         {
-            Task task = entities.Task.Find(taskId);
+            MyTask task = entities.MyTask.Find(taskId);
             task.HighPriority = hp;
             entities.Entry(task).State = EntityState.Modified;
             entities.SaveChanges();
@@ -182,9 +185,41 @@ namespace MyAnyDo2.Controllers
 
         public JsonResult GetFile()
         {
-            AnyDoDBEntities entities = new AnyDoDBEntities();
+            AnyDoDBEntities1 entities = new AnyDoDBEntities1();
             var result = entities.UploadFile.ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
+
+        }
+
+
+        [HttpPost]
+        //[ValidateAntiForgeryToken]
+        public async Task<ActionResult> SendEmail(string email, string taskName, string description)
+        {
+            var body = "<p>Jūs tiekat aicināts uz: {0} </p><p>Apraksts:</p><p>{1}</p>";
+            var message = new MailMessage();
+                message.To.Add(new MailAddress(email));  
+                message.From = new MailAddress("dina.bojaruneca@outlook.com");
+                message.Subject = taskName;
+                message.Body = string.Format(body, taskName, description);
+                message.IsBodyHtml = true;
+
+            using (var smtp = new SmtpClient())
+                {
+                    var credential = new NetworkCredential
+                    {
+                        UserName = "dina.bojaruneca@outlook.com",  // replace with valid value
+                        Password = "26dicis81"  // replace with valid value
+                    };
+                    smtp.Credentials = credential;
+                    smtp.Host = "smtp-mail.outlook.com";
+                    smtp.Port = 587;
+                    smtp.EnableSsl = true;
+
+                await smtp.SendMailAsync(message);
+            }
+
+            return View();
 
         }
 

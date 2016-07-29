@@ -18,6 +18,6 @@ namespace MyAnyDo2.Models
         public string Name { get; set; }
         public Nullable<int> TaskId { get; set; }
     
-        public virtual Task Task { get; set; }
+        public virtual MyTask MyTask { get; set; }
     }
 }
