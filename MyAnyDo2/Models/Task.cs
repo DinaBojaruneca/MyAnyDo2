@@ -19,7 +19,7 @@ namespace MyAnyDo2.Models
         {
             this.Note = new HashSet<Note>();
             this.SubTask = new HashSet<SubTask>();
-            this.File = new HashSet<File>();
+            this.UploadFile = new HashSet<UploadFile>();
         }
     
         public int Id { get; set; }
@@ -36,6 +36,6 @@ namespace MyAnyDo2.Models
         public virtual ICollection<SubTask> SubTask { get; set; }
         public virtual Time Time { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<File> File { get; set; }
+        public virtual ICollection<UploadFile> UploadFile { get; set; }
     }
 }

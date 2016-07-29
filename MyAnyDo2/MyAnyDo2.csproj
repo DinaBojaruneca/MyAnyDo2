@@ -202,9 +202,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\File.cs">
-      <DependentUpon>MyAnyDo.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\MyAnyDo.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -221,6 +218,9 @@
       <DependentUpon>MyAnyDo.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\Note.cs">
+      <DependentUpon>MyAnyDo.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\UploadFile.cs">
       <DependentUpon>MyAnyDo.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1078,6 +1078,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="UploadedFiles\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

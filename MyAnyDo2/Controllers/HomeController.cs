@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+
 
 namespace MyAnyDo2.Controllers
 {
@@ -20,6 +22,7 @@ namespace MyAnyDo2.Controllers
         
         public JsonResult GetCategory()
         {
+            AnyDoDBEntities entities = new AnyDoDBEntities();
             var result = entities.Category.ToList();            
             return Json(result, JsonRequestBehavior.AllowGet);
 
@@ -132,6 +135,57 @@ namespace MyAnyDo2.Controllers
             task.HighPriority = hp;
             entities.Entry(task).State = EntityState.Modified;
             entities.SaveChanges();
+        }
+
+
+        [HttpPost]
+        public void SaveFiles(HttpPostedFileBase file, int taskId)
+        {
+            string Message, fileName, actualFileName;
+            Message = fileName = actualFileName = string.Empty;            
+            if (file != null && file.ContentLength > 0)
+            {
+                actualFileName = file.FileName;                
+                fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+                int size = file.ContentLength;
+
+                try
+                {
+                    file.SaveAs(Path.Combine(Server.MapPath("~/UploadedFiles"), fileName));
+
+                    UploadFile upfile = new UploadFile
+                    {
+                        FileName = actualFileName,
+                        FilePath = fileName,
+                        TaskId = taskId,
+                        FileSize = size
+                    };
+
+                    entities.UploadFile.Add(upfile);
+                    entities.SaveChanges();                   
+                }
+                catch (Exception)
+                {                    
+                }
+            }            
+        }
+        
+
+        [HttpPost]
+            public void DeleteFile(int id)
+        {
+            UploadFile file = entities.UploadFile.Find(id);
+            entities.UploadFile.Remove(file);
+            entities.SaveChanges();
+        }
+
+
+        public JsonResult GetFile()
+        {
+            AnyDoDBEntities entities = new AnyDoDBEntities();
+            var result = entities.UploadFile.ToList();
+            return Json(result, JsonRequestBehavior.AllowGet);
+
         }
 
     }

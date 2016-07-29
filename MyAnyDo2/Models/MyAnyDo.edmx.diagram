@@ -14,8 +14,8 @@
         <AssociationConnector Association="AnyDoDBModel.FK__Note__TaskId__32E0915F" ManuallyRouted="false" />
         <AssociationConnector Association="AnyDoDBModel.FK__SubTask__TaskId__300424B4" ManuallyRouted="false" />
         <AssociationConnector Association="AnyDoDBModel.FK_Task_ToTable" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="AnyDoDBModel.File" Width="1.5" PointX="7.375" PointY="3.25" />
-        <AssociationConnector Association="AnyDoDBModel.FileTask" />
+        <EntityTypeShape EntityType="AnyDoDBModel.UploadFile" Width="1.5" PointX="6.75" PointY="3.5" />
+        <AssociationConnector Association="AnyDoDBModel.FK_UploadFile_ToTable" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

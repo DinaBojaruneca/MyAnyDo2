@@ -1,14 +1,14 @@
-﻿<!DOCTYPE html>
+﻿
 @section scripts{    
 <script src="~/Scripts/angular.js"></script>
 <script src="~/MyScript.js"></script>
 }
 
-<html ng-app="myAnyDoApp">
-<head>
+
+<head >
     
 </head>
-<body>
+<body ng-app="myAnyDoApp">
     <div ng-controller="categoryCtrl" ng-switch on="mode.value">
 
         @* category viewe *@
@@ -259,9 +259,31 @@
                         </div>
 
                         <!-- Attachment viewe -->
-                        <div ng-switch-when="attach">
-                            <input type="file" file-model="myFile" />
-                            <button ng-click="uploadFile()">upload me</button>
+                        <div ng-controller="UploadCtrl" ng-switch-when="attach">
+                            
+                            <form ng-submit="SaveFile()">
+                                <div>
+                                    <table>
+                                        <tr>
+                                            <td></td>
+                                            <td><input type="file" file-model="myFile" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td><input type="submit" value="Upload File" ng-click="uploadFile()" /></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <br/><br/>
+                                <div>
+                                    <table>
+                                        <tr ng-repeat="file in files | filter: FilterFiles">
+                                            <td>{{file.FileName}}</td>
+                                            <td><button class="btn btn-default" id="btnDeleteAttach" ng-click="DeleteFile($index, file.Id)">Delete</button></td>
+                                        </tr>
+                                    </table>
+                                </div>
+
+                            </form>
                         </div>
 
 
@@ -320,6 +342,6 @@
 
 
 </body>
-</html>
+
 
 

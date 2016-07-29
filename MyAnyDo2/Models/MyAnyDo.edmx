@@ -12,16 +12,6 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Name" Type="nvarchar" MaxLength="50" />
         </EntityType>
-        <EntityType Name="File">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FileName" Type="varchar" MaxLength="100" Nullable="false" />
-          <Property Name="FilePath" Type="varchar" MaxLength="300" Nullable="false" />
-          <Property Name="FileSize" Type="int" Nullable="false" />
-          <Property Name="TaskId" Type="int" Nullable="false" />
-        </EntityType>
         <EntityType Name="Note">
           <Key>
             <PropertyRef Name="Id" />
@@ -55,6 +45,16 @@
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
           <Property Name="Name" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="UploadFile">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FileName" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FilePath" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="FileSize" Type="int" Nullable="false" />
+          <Property Name="TaskId" Type="int" Nullable="false" />
         </EntityType>
         <Association Name="FK__Note__TaskId__32E0915F">
           <End Role="Task" Type="Self.Task" Multiplicity="0..1">
@@ -110,13 +110,25 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_UploadFile_ToTable">
+          <End Role="Task" Type="Self.Task" Multiplicity="1" />
+          <End Role="UploadFile" Type="Self.UploadFile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Task">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UploadFile">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="AnyDoDBModelStoreContainer">
           <EntitySet Name="Category" EntityType="Self.Category" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="File" EntityType="Self.File" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Note" EntityType="Self.Note" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="SubTask" EntityType="Self.SubTask" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Task" EntityType="Self.Task" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Time" EntityType="Self.Time" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="UploadFile" EntityType="Self.UploadFile" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK__Note__TaskId__32E0915F" Association="Self.FK__Note__TaskId__32E0915F">
             <End Role="Task" EntitySet="Task" />
             <End Role="Note" EntitySet="Note" />
@@ -132,6 +144,10 @@
           <AssociationSet Name="FK_Task_ToTable" Association="Self.FK_Task_ToTable">
             <End Role="Time" EntitySet="Time" />
             <End Role="Task" EntitySet="Task" />
+          </AssociationSet>
+          <AssociationSet Name="FK_UploadFile_ToTable" Association="Self.FK_UploadFile_ToTable">
+            <End Role="Task" EntitySet="Task" />
+            <End Role="UploadFile" EntitySet="UploadFile" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -178,7 +194,7 @@
           <NavigationProperty Name="Note" Relationship="Self.FK__Note__TaskId__32E0915F" FromRole="Task" ToRole="Note" />
           <NavigationProperty Name="SubTask" Relationship="Self.FK__SubTask__TaskId__300424B4" FromRole="Task" ToRole="SubTask" />
           <NavigationProperty Name="Time" Relationship="Self.FK_Task_ToTable" FromRole="Task" ToRole="Time" />
-          <NavigationProperty Name="File" Relationship="AnyDoDBModel.FileTask" FromRole="Task" ToRole="File" />
+          <NavigationProperty Name="UploadFile" Relationship="AnyDoDBModel.FK_UploadFile_ToTable" FromRole="Task" ToRole="UploadFile" />
         </EntityType>
         <EntityType Name="Time">
           <Key>
@@ -264,26 +280,34 @@
             <End Role="Time" EntitySet="Time" />
             <End Role="Task" EntitySet="Task" />
           </AssociationSet>
-          <EntitySet Name="File" EntityType="AnyDoDBModel.File" />
-          <AssociationSet Name="FileTask" Association="AnyDoDBModel.FileTask">
-            <End Role="File" EntitySet="File" />
+          <EntitySet Name="UploadFile" EntityType="AnyDoDBModel.UploadFile" />
+          <AssociationSet Name="FK_UploadFile_ToTable" Association="AnyDoDBModel.FK_UploadFile_ToTable">
             <End Role="Task" EntitySet="Task" />
+            <End Role="UploadFile" EntitySet="UploadFile" />
           </AssociationSet>
         </EntityContainer>
-        <EntityType Name="File">
+        <EntityType Name="UploadFile">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="FileName" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="300" FixedLength="false" Unicode="false" />
+          <Property Name="FilePath" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="FileSize" Type="Int32" Nullable="false" />
           <Property Name="TaskId" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Task" Relationship="AnyDoDBModel.FileTask" FromRole="File" ToRole="Task" />
+          <NavigationProperty Name="Task" Relationship="AnyDoDBModel.FK_UploadFile_ToTable" FromRole="UploadFile" ToRole="Task" />
         </EntityType>
-        <Association Name="FileTask">
-          <End Type="AnyDoDBModel.File" Role="File" Multiplicity="*" />
+        <Association Name="FK_UploadFile_ToTable">
           <End Type="AnyDoDBModel.Task" Role="Task" Multiplicity="1" />
+          <End Type="AnyDoDBModel.UploadFile" Role="UploadFile" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Task">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="UploadFile">
+              <PropertyRef Name="TaskId" />
+            </Dependent>
+          </ReferentialConstraint>
         </Association>
       </Schema>
     </edmx:ConceptualModels>
@@ -337,9 +361,9 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="File">
-            <EntityTypeMapping TypeName="AnyDoDBModel.File">
-              <MappingFragment StoreEntitySet="File">
+          <EntitySetMapping Name="UploadFile">
+            <EntityTypeMapping TypeName="AnyDoDBModel.UploadFile">
+              <MappingFragment StoreEntitySet="UploadFile">
                 <ScalarProperty Name="TaskId" ColumnName="TaskId" />
                 <ScalarProperty Name="FileSize" ColumnName="FileSize" />
                 <ScalarProperty Name="FilePath" ColumnName="FilePath" />

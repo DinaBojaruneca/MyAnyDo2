@@ -12,7 +12,7 @@ namespace MyAnyDo2.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class File
+    public partial class UploadFile
     {
         public int Id { get; set; }
         public string FileName { get; set; }

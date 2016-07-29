@@ -13,7 +13,7 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
         }, function () {
             alert('Faild');
         });
-    };
+    }
 
     //switching between forms
     $scope.mode = {value:'categ'};
@@ -34,15 +34,15 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
         $http({
             method: 'POST',
             url: '/Home/InsertCategory',
-            data: { name: $scope.CategoryName },
+            data: { name: $scope.CategoryName }
             //headers: { 'content-type': 'application/json' }
         })
             .success(function () {
                 getCategory();
             });
-        $scope.mode.value = "categ";        
+        $scope.mode.value = "categ";
         $scope.CategoryName = "";
-    }
+    };
 
     //delete category
     $scope.DeleteCategory = function () {
@@ -62,16 +62,16 @@ myAnyDoApp.controller("categoryCtrl", function ($scope, $http, CategoryService) 
 
 myAnyDoApp.factory('CategoryService', function($http){
     var CategoryService = {};
-    CategoryService.getCategory = function(){
+    CategoryService.getCategory = function () {
         return $http.get('/Home/GetCategory');
-    }
+    };
     return CategoryService;
 });
 
 
 
 //Task controller
-myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $rootScope) {
+myAnyDoApp.controller("TaskCtrl", function ($scope, $http) {
     getTask();
     getTime();
 
@@ -93,12 +93,12 @@ myAnyDoApp.controller("TaskCtrl", function ($scope, $http, $rootScope) {
     $scope.viewe = "time";
     $scope.SetVieweValue = function (value) {
         $scope.viewe = value;
-    }      
+    };
 
     //filter by category Id
     $scope.FilterTasks = function (task) {
         return task.CategoryId == $scope.CatId;
-    }
+    };
 
 
     $scope.SetTimePriorMode = function (timeId, Hp, Value) {
@@ -277,4 +277,96 @@ myAnyDoApp.controller("SubTaskCtrl", function ($scope, $http) {
 
     
 
+});
+
+//FileUpload controller
+myAnyDoApp.controller("UploadCtrl", function ($scope, fileUpload, $http) {
+    $scope.uploadFile = function () {
+        var file = $scope.myFile;
+
+        console.log('file is ');
+        console.dir(file);
+
+        var uploadUrl = "/Home/SaveFiles";
+        fileUpload.uploadFileToUrl(file, uploadUrl, $scope.TaskId);
+
+        //getFile();
+        //$scope.subtaskV = "attach";
+    };
+
+    getFile();
+
+    //read data from database  
+    function getFile() {
+        $http.get('/Home/GetFile')
+        .then(function (response) {
+            $scope.files = response.data;
+        });
+    }
+
+    //filter files by task Id
+    $scope.FilterFiles = function (file) {
+        return file.TaskId == $scope.TaskId;
+    }
+
+    $scope.DeleteFile = function (index, id) {
+        var file = $scope.files[index];
+        if (file.isUploaded) {
+            $http.delete('~/UploadedFiles' + file.id).then(function (response) {
+                if (response.status == 200) {
+                    $scope.files.splice(index, 1);
+                }
+            });
+        } else {
+            $scope.files.splice(index, 1);
+        }
+
+        $http({
+            method: 'POST',
+            url: '/Home/DeleteFile',
+            data: { id: id }            
+        })
+        .success(function () {
+            getFile();
+        });
+        $scope.subtaskV = "attach";
+    }
+
+});
+   
+
+myAnyDoApp.directive('fileModel', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function (scope, element, attrs) {
+            var model = $parse(attrs.fileModel);
+            var modelSetter = model.assign;
+
+            element.bind('change', function () {
+                scope.$apply(function () {
+                    modelSetter(scope, element[0].files[0]);
+                });
+            });
+        }
+    };
+}]);
+
+myAnyDoApp.service('fileUpload', function ($http) {
+    this.uploadFileToUrl = function (file, uploadUrl, taskId) {
+        var fd = new FormData();
+        fd.append('file', file);
+        fd.append('taskId', taskId)
+
+        $http.post(uploadUrl, fd, {
+            transformRequest: angular.identity,
+            headers: { 'Content-Type': undefined }
+        })
+
+        .success(function () {         
+        })
+
+        .error(function () {
+        });
+        
+    }
 });
