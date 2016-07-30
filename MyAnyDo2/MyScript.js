@@ -275,7 +275,20 @@ myAnyDoApp.controller("SubTaskCtrl", function ($scope, $http) {
         $scope.subtaskV = "subTaskData";
     }
 
-    
+    $scope.Show = false;
+    $scope.SetVisible = function () {
+        $scope.Show = true;
+    }
+    $scope.Hide = function () {
+        $scope.Show = false;
+    }
+
+    $scope.dates = ["MM/DD/YY", "DD/MM/YY"];
+    $scope.times = ["24 hour", "12 hour"];
+
+    $scope.DFormat = "DD/MM/YY";
+
+    $scope.TFormat = "24 hour";
 
 });
 

@@ -7,6 +7,7 @@
 
 <head >
     
+    
 </head>
 <body ng-app="myAnyDoApp">
     <div ng-controller="categoryCtrl" ng-switch on="mode.value">
@@ -206,97 +207,129 @@
             <div ng-controller="SubTaskCtrl" ng-switch on="subtaskV" class="container" ng-switch-when="subTaskView">
                 <div ng-switch-when="subTaskData">
                     <button ng-click="SetTaskVValue('taskData')">To tasks</button>
+                    <button ng-click="SetVisible()">Preferences</button>
+
+                    <div style="height:200px" ng-show="Show">
+                        <table class="table table-responsive">
+                            <tr>
+                                <td>Date format</td>
+                                <td><select ng-model="DFormat"><option ng-repeat="date in dates" value="{{date}}">{{date}}</option></select></td>
+                            </tr>
+                            <tr>
+                                <td>Time format</td>
+                                <td><select ng-model="TFormat"><option ng-repeat="time in times" value="{{time}}">{{time}}</option></select></td>
+                            </tr>
+                            <tr>
+                            <td><button ng-click="Hide()">Close preferences</button></td>
+                            </tr>
+                        </table>
+                    </div>
+
                     <h1>{{TaskName}}</h1>
                     <br />
-                    <h3>{{CatName}}</h3>
-                    <br />
-                    <h3>{{$parent.CreationDate | date : "long"}}</h3>
-                    <lable>
-                        <input type="checkbox" ng-model="$parent.HighPriority" ng-click="ChangePriority()" />
-                        Set as HighPriority
-                    </lable>
-
-                    <br />
-                    <br />
-                    <div class="btn-group">
-                        <button class="btn btn-default" ng-click="SetTviewe('notes')">Notes</button>
-                        <button class="btn btn-default" ng-click="SetTviewe('subTask')">SubTasks</button>
-                        <button class="btn btn-default" ng-click="SetTviewe('attach')">Attachments</button>
-                        <button class="btn btn-default" ng-click="SetTviewe('shear')">Share</button>
+                    
+                    <div>
+                        <h3>{{CatName}}</h3>
+                    </div>
+                    <div class="form-group row">
+                        <div ng-switch on="DFormat" class="col-sm-2">
+                            <h4 ng-switch-when="MM/DD/YY">{{$parent.CreationDate.slice(6, -2) | date : "EEEE MM.dd"}}</h4>
+                            <h4 ng-switch-when="DD/MM/YY">{{$parent.CreationDate.slice(6, -2) | date : "EEEE dd.MM"}}</h4>
+                        </div>
+                        <div ng-switch on="TFormat" class="col-sm-10">
+                            <h4 ng-switch-when="24 hour"> at {{$parent.CreationDate.slice(6, -2) | date : " HH:mm"}}</h4>
+                            <h4 ng-switch-when="12 hour"> at {{$parent.CreationDate.slice(6, -2) | date : " h:mm a"}}</h4>
+                        </div>                       
+                    </div>                       
                         <br />
+
+
+                        <lable>
+                            <input type="checkbox" ng-model="$parent.HighPriority" ng-click="ChangePriority()" />
+                            Set as HighPriority
+                        </lable>
+
+                        <br />
+                        <br />
+                        <div class="btn-group">
+                            <button class="btn btn-default" ng-click="SetTviewe('notes')">Notes</button>
+                            <button class="btn btn-default" ng-click="SetTviewe('subTask')">SubTasks</button>
+                            <button class="btn btn-default" ng-click="SetTviewe('attach')">Attachments</button>
+                            <button class="btn btn-default" ng-click="SetTviewe('shear')">Share</button>
+                            <br />
+                        </div>
+
+                        <div class="container" ng-switch on="Tviewe">
+
+                            <!-- subtask viewe -->
+                            <div ng-switch-when="subTask">
+                                <table class="table table-responsive">
+                                    <tr>
+                                        <td style="cursor:pointer" align="center" ng-click="SetSubtaskV('addSubtask')">+ Add subtask</td>
+                                    </tr>
+                                    <tr ng-repeat="subtask in subtasks | filter : FilterSubTasks">
+                                        <td>{{subtask.Name}}</td>
+                                        <td>
+                                            <button class="btn btn-default" id="btnDeleteSubTask" ng-click="DeleteSubtask(subtask.Id)">DeleteSubtask</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Note viewe -->
+                            <div ng-switch-when="notes">
+                                <table class="table table-responsive">
+                                    <tr>
+                                        <td style="cursor:pointer" align="center" ng-click="SetSubtaskV('addNote')">+ Add Note</td>
+                                    </tr>
+                                    <tr ng-repeat="note in notes | filter : FilterNotes">
+                                        <td>{{note.Name}}</td>
+                                        <td>
+                                            <button class="btn btn-default" id="btnDeleteNote" ng-click="DeleteNote(note.Id)">DeleteNote</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                            <!-- Attachment viewe -->
+                            <div ng-controller="UploadCtrl" ng-switch-when="attach">
+
+                                <form ng-submit="SaveFile()">
+                                    <div>
+                                        <table>
+                                            <tr>
+                                                <td></td>
+                                                <td><input type="file" file-model="myFile" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td><input type="submit" value="Upload File" ng-click="uploadFile()" /></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <br /><br />
+                                    <div>
+                                        <table>
+                                            <tr ng-repeat="file in files | filter: FilterFiles">
+                                                <td>{{file.FileName}}</td>
+                                                <td><button class="btn btn-default" id="btnDeleteAttach" ng-click="DeleteFile($index, file.Id)">Delete</button></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+
+                                </form>
+                            </div>
+
+
+                            <!-- Shear viewe -->
+                            <div ng-controller="EmailCtrl" ng-switch-when="shear">
+                                <input type="text" placeholder="e-mail To" ng-model="Email" />
+                                <input type="text" placeholder="description" ng-model="Description" />
+                                <input type="submit" value="Send Email" ng-click="SendEmail()" />
+                            </div>
+
+
+                        </div>
                     </div>
-
-                    <div class="container" ng-switch on="Tviewe">
-
-                        <!-- subtask viewe -->
-                        <div ng-switch-when="subTask">
-                            <table class="table table-responsive">
-                                <tr>
-                                    <td style="cursor:pointer" align="center" ng-click="SetSubtaskV('addSubtask')">+ Add subtask</td>
-                                </tr>
-                                <tr ng-repeat="subtask in subtasks | filter : FilterSubTasks">
-                                    <td>{{subtask.Name}}</td>
-                                    <td>
-                                        <button class="btn btn-default" id="btnDeleteSubTask" ng-click="DeleteSubtask(subtask.Id)">DeleteSubtask</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Note viewe -->
-                        <div ng-switch-when="notes">
-                            <table class="table table-responsive">
-                                <tr>
-                                    <td style="cursor:pointer" align="center" ng-click="SetSubtaskV('addNote')">+ Add Note</td>
-                                </tr>
-                                <tr ng-repeat="note in notes | filter : FilterNotes">
-                                    <td>{{note.Name}}</td>
-                                    <td>
-                                        <button class="btn btn-default" id="btnDeleteNote" ng-click="DeleteNote(note.Id)">DeleteNote</button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </div>
-
-                        <!-- Attachment viewe -->
-                        <div ng-controller="UploadCtrl" ng-switch-when="attach">
-                            
-                            <form ng-submit="SaveFile()">
-                                <div>
-                                    <table>
-                                        <tr>
-                                            <td></td>
-                                            <td><input type="file" file-model="myFile" /></td>
-                                        </tr>
-                                        <tr>
-                                            <td><input type="submit" value="Upload File" ng-click="uploadFile()" /></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                                <br/><br/>
-                                <div>
-                                    <table>
-                                        <tr ng-repeat="file in files | filter: FilterFiles">
-                                            <td>{{file.FileName}}</td>
-                                            <td><button class="btn btn-default" id="btnDeleteAttach" ng-click="DeleteFile($index, file.Id)">Delete</button></td>
-                                        </tr>
-                                    </table>
-                                </div>
-
-                            </form>
-                        </div>
-
-
-                        <!-- Shear viewe -->
-                        <div ng-controller="EmailCtrl" ng-switch-when="shear">
-                            <input type="text" placeholder="e-mail To" ng-model="Email"/>
-                            <input type="text" placeholder="description" ng-model="Description" />
-                            <input type="submit" value="Send Email" ng-click="SendEmail()" />
-                        </div>
-
-
-                    </div>
-                </div>
 
                 <!-- AddSubtask Viewe -->
                 <div class="container panel" ng-switch-when="addSubtask">
