@@ -2,13 +2,17 @@
 @section scripts{    
 <script src="~/Scripts/angular.js"></script>
 <script src="~/MyScript.js"></script>
+<script src="~/TaskCtrl.js"></script>
+<script src="~/SubtaskCtrl.js"></script>
+<script src="~/FileUploadCtrl.js"></script>
+<script src="~/EmailCtrl.js"></script>
 }
 
 
-<head >
-    
+<head >   
     
 </head>
+
 <body ng-app="myAnyDoApp">
     <div ng-controller="categoryCtrl" ng-switch on="mode.value">
 
@@ -206,10 +210,10 @@
             <!-- SubTask View -->
             <div ng-controller="SubTaskCtrl" ng-switch on="subtaskV" class="container" ng-switch-when="subTaskView">
                 <div ng-switch-when="subTaskData">
-                    <button ng-click="SetTaskVValue('taskData')">To tasks</button>
-                    <button ng-click="SetVisible()">Preferences</button>
+                    <button class="btn btn-default" ng-click="SetTaskVValue('taskData')">To tasks</button>
+                    <button class="btn btn-default" ng-click="SetVisible()">Preferences</button>
 
-                    <div style="height:200px" ng-show="Show">
+                    <div class="container" style="height:200px" ng-show="Show">
                         <table class="table table-responsive">
                             <tr>
                                 <td>Date format</td>
@@ -220,7 +224,7 @@
                                 <td><select ng-model="TFormat"><option ng-repeat="time in times" value="{{time}}">{{time}}</option></select></td>
                             </tr>
                             <tr>
-                            <td><button ng-click="Hide()">Close preferences</button></td>
+                            <td><button class="btn btn-default" ng-click="Hide()">Close preferences</button></td>
                             </tr>
                         </table>
                     </div>
@@ -296,13 +300,15 @@
 
                                 <form ng-submit="SaveFile()">
                                     <div>
-                                        <table>
-                                            <tr>
-                                                <td></td>
-                                                <td><input type="file" file-model="myFile" /></td>
+                                        <table class="table-condensed">
+                                            <tr>                                                
+                                                <td><input class="form-control" type="file" file-model="myFile" /></td>
                                             </tr>
                                             <tr>
-                                                <td><input type="submit" value="Upload File" ng-click="uploadFile()" /></td>
+                                                <td>
+                                                    <input type="submit" class="btn btn-default" value="Upload File" ng-click="uploadFile()" />
+                                                    <input type="submit" class="btn btn-default" value="Refrash" ng-click="Refrash()" />
+                                                </td>                                                
                                             </tr>
                                         </table>
                                     </div>
@@ -321,10 +327,10 @@
 
 
                             <!-- Shear viewe -->
-                            <div ng-controller="EmailCtrl" ng-switch-when="shear">
-                                <input type="text" placeholder="e-mail To" ng-model="Email" />
-                                <input type="text" placeholder="description" ng-model="Description" />
-                                <input type="submit" value="Send Email" ng-click="SendEmail()" />
+                            <div class="container" ng-controller="EmailCtrl" ng-switch-when="shear">
+                                <input class="form-control" type="text" placeholder="e-mail To" ng-model="Email" />
+                                <input class="form-control" type="text" placeholder="description" ng-model="Description" />
+                                <input class="btn btn-default" type="submit" value="Send Email" ng-click="SendEmail()" />
                             </div>
 
 

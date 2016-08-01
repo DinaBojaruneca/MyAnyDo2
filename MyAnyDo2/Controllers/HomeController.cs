@@ -192,35 +192,33 @@ namespace MyAnyDo2.Controllers
         }
 
 
-        [HttpPost]
-        //[ValidateAntiForgeryToken]
-        public async Task<ActionResult> SendEmail(string email, string taskName, string description)
+        [HttpPost]       
+        public void SendEmail(string email, string taskName, string description)
         {
-            var body = "<p>Jūs tiekat aicināts uz: {0} </p><p>Apraksts:</p><p>{1}</p>";
-            var message = new MailMessage();
-                message.To.Add(new MailAddress(email));  
+            var body = "<p>Jūs tiekat aicināts uz: {0} </p><p>{1}</p>";
+            
+                MailMessage message = new MailMessage();
+                message.To.Add(new MailAddress(email));
                 message.From = new MailAddress("dina.bojaruneca@outlook.com");
                 message.Subject = taskName;
                 message.Body = string.Format(body, taskName, description);
                 message.IsBodyHtml = true;
 
-            using (var smtp = new SmtpClient())
+                using (SmtpClient smtp = new SmtpClient())
                 {
                     var credential = new NetworkCredential
                     {
-                        UserName = "dina.bojaruneca@outlook.com",  // replace with valid value
-                        Password = "26dicis81"  // replace with valid value
+                        UserName = "dina.bojaruneca@outlook.com",
+                        Password = "26dicis81"
                     };
                     smtp.Credentials = credential;
                     smtp.Host = "smtp-mail.outlook.com";
                     smtp.Port = 587;
                     smtp.EnableSsl = true;
 
-                await smtp.SendMailAsync(message);
-            }
-
-            return View();
-
+                    smtp.Send(message);
+                }
+                                
         }
 
     }
