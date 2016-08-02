@@ -296,25 +296,26 @@
                             </div>
 
                             <!-- Attachment viewe -->
-                            <div ng-controller="UploadCtrl" ng-switch-when="attach">
-
-                                <form ng-submit="SaveFile()">
-                                    <div>
+                            <div  ng-switch-when="attach">
+                               
+                                <form>
+                                    <div ng-controller="UploadCtrl">
                                         <table class="table-condensed">
-                                            <tr>                                                
-                                                <td><input class="form-control" type="file" file-model="myFile" /></td>
+                                            <tr>
+                                                <td><input class="form-control" type="file" file-input="files" multiple /></td>
                                             </tr>
                                             <tr>
                                                 <td>
                                                     <input type="submit" class="btn btn-default" value="Upload File" ng-click="uploadFile()" />
-                                                    <input type="submit" class="btn btn-default" value="Refrash" ng-click="Refrash()" />
-                                                </td>                                                
+                                                    
+                                                </td>
                                             </tr>
                                         </table>
                                     </div>
                                     <br /><br />
-                                    <div>
+                                    <div ng-controller="FileCtrl">
                                         <table>
+                                            <tr><td><input type="submit" class="btn btn-default" value="Refresh" ng-click="Refresh()" /></td></tr>
                                             <tr ng-repeat="file in files | filter: FilterFiles">
                                                 <td>{{file.FileName}}</td>
                                                 <td><button class="btn btn-default" id="btnDeleteAttach" ng-click="DeleteFile($index, file.Id)">Delete</button></td>

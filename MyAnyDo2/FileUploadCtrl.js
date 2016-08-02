@@ -1,32 +1,62 @@
 ﻿var myAnyDoApp = angular.module("myAnyDoApp");
 
-myAnyDoApp.controller("UploadCtrl", function ($scope, fileUpload, $http) {
+myAnyDoApp.controller('UploadCtrl', ['$scope', '$http', function ($scope, $http) {
+    
 
-    $scope.uploadFile = function () {
-        var file = $scope.myFile;
-        var uploadUrl = "/Home/SaveFiles";
-        fileUpload.uploadFileToUrl(file, uploadUrl, $scope.TaskId);   
+    $scope.filesChanged = function(elm){
+        $scope.files=elm.files
+        $scope.$apply();
     }
+    $scope.uploadFile = function(){
+        var fd = new FormData()
+        angular.forEach($scope.files, function(file){
+            fd.append('file', file)
+            fd.append('taskId', $scope.TaskId)
+        })
+        $http.post('/Home/SaveFiles', fd,{
+            transformRequest:angular.identity,
+            headers:{'Content-Type':undefined}
+        })
+        .success(function(d){
+            console.log(d)
+        })
+    }
+}])
 
+myAnyDoApp.directive('fileInput', ['$parse', function ($parse) {
+    return {
+        restrict: 'A',
+        link: function (scope, elm, attrs) {
+            elm.bind('change', function () {
+                $parse(attrs.fileInput)
+                .assign(scope, elm[0].files)
+                scope.$apply()
+            })
+        }
+    }
+    }]);
+
+
+myAnyDoApp.controller('FileCtrl', function ($scope, $http) {
     getFile();
 
-    $scope.Refrash = function () {
-        getFile();
-        $scope.Tviewe = 'attach';
-    }
-
-    //read data from database  
     function getFile() {
         $http.get('/Home/GetFile')
-        .then(function (response) {
-            $scope.files = response.data;
-        });
+          .then(function (response) {
+              $scope.files = response.data;
+          });
+    }
+
+    $scope.Refresh = function () {
+        getFile();
+        $scope.Tviewe = 'attach';
     }
 
     //filter files by task Id
     $scope.FilterFiles = function (file) {
         return file.TaskId == $scope.TaskId;
     }
+
 
     $scope.DeleteFile = function (index, id) {
         var file = $scope.files[index];
@@ -48,43 +78,6 @@ myAnyDoApp.controller("UploadCtrl", function ($scope, fileUpload, $http) {
         .success(function () {
             getFile();
         });
-
-    }
-
-});
-
-
-myAnyDoApp.directive('fileModel', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        link: function (scope, element, attrs) {
-            var model = $parse(attrs.fileModel);
-            var modelSetter = model.assign;
-
-            element.bind('change', function () {
-                scope.$apply(function () {
-                    modelSetter(scope, element[0].files[0]);
-                });
-            });
-        }
-    };
-}]);
-
-myAnyDoApp.service('fileUpload', function ($http) {
-    this.uploadFileToUrl = function (file, uploadUrl, taskId) {
-        var fd = new FormData();
-        fd.append('file', file);
-        fd.append('taskId', taskId)
-
-        $http.post(uploadUrl, fd, {
-            transformRequest: angular.identity,
-            headers: { 'Content-Type': undefined }
-        })
-        .success(function () {
-            
-        })
-
-        .error(function () {
-        });
     }
 });
+

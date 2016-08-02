@@ -140,39 +140,49 @@ namespace MyAnyDo2.Controllers
             entities.SaveChanges();
         }
 
+                
 
         [HttpPost]
-        public void SaveFiles(HttpPostedFileBase file, int taskId)
+        public JsonResult SaveFiles(HttpPostedFileBase file, int taskId)
         {
             string Message, fileName, actualFileName;
-            Message = fileName = actualFileName = string.Empty;            
+            Message = fileName = actualFileName = string.Empty;
+            bool flag = false;
             if (file != null && file.ContentLength > 0)
             {
-                actualFileName = file.FileName;                
+                actualFileName = file.FileName;
                 fileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
                 int size = file.ContentLength;
 
                 try
-                {
-                    file.SaveAs(Path.Combine(Server.MapPath("~/UploadedFiles"), fileName));
+                {                    
+                    file.SaveAs(Server.MapPath("../UploadedFiles") + Guid.NewGuid() + "." + actualFileName.Split('.')[1]);
 
-                    UploadFile upfile = new UploadFile
+                    UploadFile f = new UploadFile
                     {
                         FileName = actualFileName,
                         FilePath = fileName,
                         TaskId = taskId,
                         FileSize = size
                     };
-
-                    entities.UploadFile.Add(upfile);
-                    entities.SaveChanges();                   
+                    using (AnyDoDBEntities1 dc = new AnyDoDBEntities1())
+                    {
+                        dc.UploadFile.Add(f);
+                        dc.SaveChanges();
+                        Message = "File uploaded successfully";
+                        flag = true;
+                    }
                 }
                 catch (Exception)
-                {                    
+                {
+                    Message = "File upload failed! Please try again";
                 }
-            }            
+
+            }
+            return new JsonResult { Data = new { Message = Message + taskId, Status = flag } };
         }
-        
+
+
 
         [HttpPost]
             public void DeleteFile(int id)
@@ -195,11 +205,11 @@ namespace MyAnyDo2.Controllers
         [HttpPost]       
         public void SendEmail(string email, string taskName, string description)
         {
-            var body = "<p>Jūs tiekat aicināts uz: {0} </p><p>{1}</p>";
+            var body = "<p>Jou are invited to: {0} </p><p>{1}</p>";
             
                 MailMessage message = new MailMessage();
                 message.To.Add(new MailAddress(email));
-                message.From = new MailAddress("dina.bojaruneca@outlook.com");
+                message.From = new MailAddress("myanydo2@gmail.com");
                 message.Subject = taskName;
                 message.Body = string.Format(body, taskName, description);
                 message.IsBodyHtml = true;
@@ -208,13 +218,15 @@ namespace MyAnyDo2.Controllers
                 {
                     var credential = new NetworkCredential
                     {
-                        UserName = "dina.bojaruneca@outlook.com",
-                        Password = "26dicis81"
+                        UserName = "myanydo2@gmail.com",
+                        Password = "987plm321"
                     };
+                    smtp.UseDefaultCredentials = false;
                     smtp.Credentials = credential;
-                    smtp.Host = "smtp-mail.outlook.com";
+                    smtp.Host = "smtp.gmail.com";
                     smtp.Port = 587;
                     smtp.EnableSsl = true;
+                    
 
                     smtp.Send(message);
                 }
